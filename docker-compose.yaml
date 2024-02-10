@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: ./images/nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - php
+      - nodejs
+    volumes:
+      - ./www:/app
+
+  php:
+    build:
+      context: ./images/php
+    volumes:
+      - ./www:/app
+
+  nodejs:
+    build:
+      context: .  # This sets the build context to the root of your project
+      dockerfile: images/nodejs/Dockerfile
+    ports:
+      - "5173:5173" # Open Vue dev port Vite
+    volumes:
+      - ./www/frontend:/opt/app-root/src
+
+  postgres:
+    build:
+      context: ./images/postgres
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      - postgres_data:/var/lib/pgsql/15/data
+
+volumes:
+  postgres_data:
